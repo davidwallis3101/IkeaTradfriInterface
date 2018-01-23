@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Interface Domain="HomeAutomation.TradfriInterface" AssemblyName="TradfriInterface.dll" SupportedPlatform="All">
+  <Description>Ikea Tradfri Interface</Description>
+  <Options>
+    <Option Name="GatewayName" Value="GatewayName" />
+    <Option Name="GatewayAddress" Value="192.168.0.14" />
+    <Option Name="GatewaySecret" Value="mySecret" />
+  </Options>
+</Interface>

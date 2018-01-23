@@ -1,0 +1,18 @@
+{
+    "author": "David Wallis",
+    "version": "v!DO_NOT_EDIT_VERSION!",
+    "title": "TradfriInterface",
+    "description": "Interface for Ikea Tradfri",
+    "published": "!DO_NOT_EDIT_RELEASEDATE!",
+    "sourcecode": "",
+    "homepage": "https://github.com/davidwallis3101/TradfriInterface",
+    "widgets": [],
+    "programs": [],
+    "interfaces": [
+        {
+            "file": "TradfriInterface.zip",
+            "name": "TradfriInterface",
+            "description": "Ikea Tradfri Interface"
+        }
+    ]
+}
