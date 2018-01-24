@@ -62,6 +62,8 @@ namespace TestProject
             var migInterface = migService.GetInterface(interfaceDomain);
 
             migInterface.Connect();
+            Console.WriteLine("Get Modules");
+            migInterface.GetModules();
 
             // Test an interface API command programmatically <module_domain>/<module_address>/<command>[/<option_0>[/../<option_n>]]
             // var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/3/Greet.Hello/Username"));
@@ -85,6 +87,7 @@ namespace TestProject
             // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/2/Temperature.Get"));
             // MigService.Log.Debug(response);
 
+            
             Console.WriteLine("\n[Press Enter to Quit]\n");
             Console.ReadLine();
         }

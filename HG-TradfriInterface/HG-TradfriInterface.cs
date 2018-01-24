@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using MIG.Config;
 using NLog;
 using Tomidix.CSharpTradFriLibrary;
+using Tomidix.CSharpTradFriLibrary.Controllers;
 using Tomidix.CSharpTradFriLibrary.Models;
 
 // Your namespace must begin MIG.Interfaces for MIG to be able to load it
@@ -19,7 +21,7 @@ namespace MIG.Interfaces.HomeAutomation
     /// <summary>
     /// TradfriInterface class
     /// </summary>
-    public class TradfriInterface : MigInterface
+    public partial class TradfriInterface : MigInterface
     {
         /// <summary>
         /// Logger
@@ -34,6 +36,8 @@ namespace MIG.Interfaces.HomeAutomation
         private List<TradFriDevice> devices;
 
         private TradFriCoapConnector gatewayConnection;
+
+        private GatewayController gatewayController;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TradfriInterface"/> class.
@@ -81,37 +85,6 @@ namespace MIG.Interfaces.HomeAutomation
         public event InterfacePropertyChangedEventHandler InterfacePropertyChanged;
 
         /// <summary>
-        /// Enum containing the commands that are permitted via the web interface
-        /// </summary>
-        public enum Commands
-        {
-            /// <summary>
-            /// No Set Command Example
-            /// </summary>
-            NotSet,
-
-            /// <summary>
-            /// Control.On Example
-            /// </summary>
-            Control_On,
-
-            /// <summary>
-            /// Control.Off Example
-            /// </summary>
-            Control_Off,
-
-            /// <summary>
-            /// Temperature.Get Example
-            /// </summary>
-            Temperature_Get,
-
-            /// <summary>
-            /// Greet.Hello
-            /// </summary>
-            Greet_Hello
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether this interface is enabled
         /// </summary>
         public bool IsEnabled { get; set; }
@@ -151,11 +124,44 @@ namespace MIG.Interfaces.HomeAutomation
 
         /// <summary>
         /// Gets the interface modules
-        /// </summary>
-        /// <returns>A list containing the interfaces modules</returns>
+        /// </summary>      
         public List<InterfaceModule> GetModules()
         {
-            return this.modules;
+            var modules = new List<InterfaceModule>();
+
+            // Get Devices from the controller
+            devices = LoadAllDevices(gatewayController, gatewayConnection);
+
+            foreach (var device in devices)
+            {
+                var module = new InterfaceModule
+                {
+                    Domain = this.GetDomain(),
+                    Address = device.ID.ToString()
+                };
+                
+                if (device.Info.DeviceType.IndexOf(" bulb ", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    Log.Debug($"Adding Module {device.Info.DeviceType}");
+                    module.Description = "Light";
+                    module.ModuleType = ModuleTypes.Dimmer;
+                }
+                else if (device.Info.DeviceType.IndexOf(" remote ", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    Log.Debug($"Adding Module {device.Info.DeviceType}");
+                    module.Description = "Binary Switch";
+                    module.ModuleType = ModuleTypes.Switch;
+                }
+                else
+                {
+                    Log.Debug($"Unknown Module Type: {device.Info.DeviceType}");
+                    module.Description = "Unknown Type";
+                    module.ModuleType = ModuleTypes.Generic;
+                }
+
+                modules.Add(module);
+            }
+            return modules;
         }
 
         /// <summary>
@@ -190,13 +196,24 @@ namespace MIG.Interfaces.HomeAutomation
                     this.GetOption("GatewaySecret").Value);
 
                 gatewayConnection.Connect();
+                gatewayController = new GatewayController(gatewayConnection.Client);
+
                 Log.Info("Connected");
-                // TODO: Perform a connection to your 'hardware' here
+
                 this.IsConnected = true;
+
+                // Console.WriteLine("Loading devices");
+                // LoadAllDevices();
+                // Console.WriteLine("Loaded devices");
             }
 
             this.OnInterfaceModulesChanged(this.GetDomain());
             return true;
+        }
+
+        private static List<TradFriDevice> LoadAllDevices(GatewayController gwControler, TradFriCoapConnector gwConn)
+        {
+            return gwControler.GetDevices().Select(deviceID => new DeviceController(deviceID, gwConn.Client)).Select(dc => dc.GetTradFriDevice()).ToList();
         }
 
         /// <summary>
