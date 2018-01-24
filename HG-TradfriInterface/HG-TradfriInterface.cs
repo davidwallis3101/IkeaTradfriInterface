@@ -16,6 +16,7 @@ using NLog;
 using Tomidix.CSharpTradFriLibrary;
 using Tomidix.CSharpTradFriLibrary.Controllers;
 using Tomidix.CSharpTradFriLibrary.Models;
+using System.Text.RegularExpressions;
 
 // namespaces must begin MIG.Interfaces for MIG to be able to load it
 namespace MIG.Interfaces.HomeAutomation
@@ -103,23 +104,33 @@ namespace MIG.Interfaces.HomeAutomation
                     Address = device.ID.ToString()
                 };
 
-                if (device.Info.DeviceType.IndexOf(" bulb ", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                switch (device.ApplicationType)
                 {
-                    Log.Debug($"Adding Module {device.Info.DeviceType}");
-                    module.Description = "Light";
-                    module.ModuleType = ModuleTypes.Dimmer;
-                }
-                else if (device.Info.DeviceType.IndexOf(" remote ", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                {
-                    Log.Debug($"Adding Module {device.Info.DeviceType}");
-                    module.Description = "Binary Switch";
-                    module.ModuleType = ModuleTypes.Switch;
-                }
-                else
-                {
-                    Log.Debug($"Unknown Module Type: {device.Info.DeviceType}");
-                    module.Description = "Unknown Type";
-                    module.ModuleType = ModuleTypes.Generic;
+                    case DeviceType.Light:
+                        Log.Debug($"Adding Module {device.ApplicationType}");
+                        module.Description = "Light";
+                        module.ModuleType = ModuleTypes.Dimmer;
+                        break;
+
+                    case DeviceType.Remote:
+                        Log.Debug($"Adding Module {device.ApplicationType}");
+                        module.Description = "Binary Switch";
+                        module.ModuleType = ModuleTypes.Switch;
+                        break;
+
+                    case DeviceType.Unknown_1:
+                        Log.Debug($"Adding Module {device.ApplicationType}");
+                        break;
+
+                    case DeviceType.Unknown_2:
+                        Log.Debug($"Adding Module {device.ApplicationType}");
+                        break;
+
+                    default:
+                        Log.Debug($"Adding Module {device.ApplicationType}");
+                        module.Description = "Unknown Type";
+                        module.ModuleType = ModuleTypes.Generic;
+                        break;
                 }
 
                 modules.Add(module);
@@ -218,6 +229,8 @@ namespace MIG.Interfaces.HomeAutomation
             Enum.TryParse(request.Command.Replace(".", "_"), out Commands command);
             var dc = new DeviceController(Convert.ToInt64(request.Address), this.gatewayConnection.Client);
 
+            Log.Debug("Command: {0}", command);
+
             switch (command)
             {
                 case Commands.Control_On:
@@ -228,6 +241,30 @@ namespace MIG.Interfaces.HomeAutomation
                 case Commands.Control_Off:
                     raiseEvent = true;
                     dc.TurnOff();
+                    break;
+
+                case Commands.Control_Toggle:
+                    throw new NotImplementedException();
+                    //raiseEvent = true;
+                    //break;
+
+                case Commands.Control_Colour:
+                    raiseEvent = true;
+                    var colour = request.GetOption(0);
+
+                    // todo parse enum
+                    Log.Debug("Setting Colour to {0}", colour);
+                    dc.SetColor(colour);
+                    break;
+
+                case Commands.Controller_Reboot:
+                    this.gatewayController.Reboot();
+                    Log.Info("Rebooting controller");
+                    break;
+
+                case Commands.Battery_Get:
+                    var dev = dc.GetTradFriDevice();
+                    returnValue = new ResponseText(dev.Info.Battery.ToString());
                     break;
 
                 default:

@@ -13,28 +13,20 @@ namespace MIG.Interfaces.HomeAutomation
         #pragma warning disable SA1602 // Enumeration items must be documented
         NotSet,
 
-        SwitchBinary_Get,
-        SwitchBinary_Set,
-
-        SwitchMultilevel_Get,
-        SwitchMultilevel_Set,
-
-        MultiInstance_Get,
-        MultiInstance_Set,
-        MultiInstance_GetCount,
+        Controller_Reboot,
 
         Battery_Get,
 
-        ManufacturerSpecific_Get,
-        NodeInfo_Get,
+        //ManufacturerSpecific_Get,
+        //NodeInfo_Get,
 
-        SensorBinary_Get,
-        SensorMultiLevel_Get,
 
         Control_On,
         Control_Off,
         Control_Level,
         Control_Toggle,
+        Control_Colour
+
         #pragma warning restore SA1602 // Enumeration items must be documented
     }
 }

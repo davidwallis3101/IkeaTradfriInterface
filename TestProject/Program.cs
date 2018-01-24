@@ -68,15 +68,26 @@ namespace TestProject
 
             foreach (MIG.InterfaceModule mod in interfacemodules)
             {
+                Console.WriteLine($"Module Address: {mod.Address} Module Type: {mod.ModuleType}");
                 if (mod.ModuleType.ToString() != "Dimmer")
                 {
-                    continue;
+                    ResponseText resp;
+                    resp = (ResponseText)migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Battery.Get"));
+                    Console.WriteLine(resp.ResponseValue);
                 }
 
-                Console.WriteLine($"Module Address: {mod.Address} Module Type: {mod.ModuleType}");
-                var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
-                System.Threading.Thread.Sleep(1500);
-                response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
+
+
+                //var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
+                //System.Threading.Thread.Sleep(1000);
+                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/eaf6fb"));
+                //System.Threading.Thread.Sleep(2000);
+                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/ebb63e"));
+                //System.Threading.Thread.Sleep(2000);
+                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/f5faf6"));
+                //System.Threading.Thread.Sleep(2000);
+                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
+
             }
 
             Console.WriteLine("\n[Press Enter to Quit]\n");
