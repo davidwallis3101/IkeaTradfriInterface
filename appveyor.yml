@@ -14,7 +14,7 @@ deploy:
   release: V$(appveyor_build_version)
   description: 'IkeaTradfiInterface Version $(appveyor_build_version)'
   provider: GitHub
-    auth_token:
+  auth_token:
     secure: 6xpJrNRZ7YlU22YNrDRs9dAmvp2LIJ4O7t+a5443/NERIk9Aspip7glMn9O4sqU6
   draft: false
   prerelease: true
