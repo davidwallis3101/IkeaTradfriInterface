@@ -29,7 +29,7 @@ namespace TestProject
     /// <summary>
     /// Main class
     /// </summary>
-    internal class Program
+    internal static class Program
     {
         /// <summary>
         /// Main Program
@@ -68,39 +68,17 @@ namespace TestProject
 
             foreach (MIG.InterfaceModule mod in interfacemodules)
             {
-                if (mod.ModuleType.ToString() == "Dimmer")
+                if (mod.ModuleType.ToString() != "Dimmer")
                 {
-                    Console.WriteLine($"Module Address: {mod.Address} Module Type: {mod.ModuleType}");
-                    var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
-                    System.Threading.Thread.Sleep(1500);
-                    response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
-
+                    continue;
                 }
+
+                Console.WriteLine($"Module Address: {mod.Address} Module Type: {mod.ModuleType}");
+                var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
+                System.Threading.Thread.Sleep(1500);
+                response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
             }
 
-            // Test an interface API command programmatically <module_domain>/<module_address>/<command>[/<option_0>[/../<option_n>]]
-            // var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/3/Greet.Hello/Username"));
-
-            // <module_domain> ::= "Example.InterfaceSkelton"
-            // <module_address> ::= "3"
-            // <command> ::= "Greet.Hello"
-            // <option_0> ::= "Username"
-            // For more infos about MIG API see:
-            //    http://genielabs.github.io/HomeGenie/api/mig/overview.html
-            //    http://genielabs.github.io/HomeGenie/api/mig/mig_api_interfaces.html
-
-            // The same command can be invoked though the WebGateway
-            // http://<server_address>:8080/api/Example.InterfaceSkelton/1/Greet.Hello/Username
-
-            // Test some other interface API command
-            // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/1/Control.On"));
-            // MigService.Log.Debug(response);
-            // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/1/Control.Off"));
-            // MigService.Log.Debug(response);
-            // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/2/Temperature.Get"));
-            // MigService.Log.Debug(response);
-
-            
             Console.WriteLine("\n[Press Enter to Quit]\n");
             Console.ReadLine();
         }

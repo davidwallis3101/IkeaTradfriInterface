@@ -1,4 +1,4 @@
-﻿// <copyright file="TradfriInterface.cs" company="Wallis2000">
+﻿// <copyright file="HG-TradfriInterface.cs" company="Wallis2000">
 // This file is part of the Homegenie-BE Ikea Tradfri Interface Project source code.
 //
 // Author: David Wallis david@wallis2000.co.uk
@@ -17,7 +17,7 @@ using Tomidix.CSharpTradFriLibrary;
 using Tomidix.CSharpTradFriLibrary.Controllers;
 using Tomidix.CSharpTradFriLibrary.Models;
 
-// Your namespace must begin MIG.Interfaces for MIG to be able to load it
+// namespaces must begin MIG.Interfaces for MIG to be able to load it
 namespace MIG.Interfaces.HomeAutomation
 {
     /// <summary>
@@ -29,11 +29,6 @@ namespace MIG.Interfaces.HomeAutomation
         /// Logger
         /// </summary>
         private static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// List containing interface Modules
-        /// </summary>
-        private readonly List<InterfaceModule> modules;
 
         private List<TradFriDevice> devices;
 
@@ -100,7 +95,7 @@ namespace MIG.Interfaces.HomeAutomation
             // Get Devices from the controller
             this.devices = this.LoadAllDevices();
 
-            foreach (var device in devices)
+            foreach (var device in this.devices)
             {
                 var module = new InterfaceModule
                 {
@@ -155,17 +150,28 @@ namespace MIG.Interfaces.HomeAutomation
 
                 this.devices = new List<TradFriDevice>();
 
-                if (string.IsNullOrEmpty(this.GetOption("GatewayName").Value)) { throw new Exception("Gateway name not configured"); }
-                if (string.IsNullOrEmpty(this.GetOption("GatewayAddress").Value)) { throw new Exception("Gateway address not configured"); }
-                if (string.IsNullOrEmpty(this.GetOption("GatewaySecret").Value)) { throw new Exception("Gateway secret not configured"); }
+                if (string.IsNullOrEmpty(this.GetOption("GatewayName").Value))
+                {
+                    throw new Exception("Gateway name not configured");
+                }
 
-                gatewayConnection = new TradFriCoapConnector(
+                if (string.IsNullOrEmpty(this.GetOption("GatewayAddress").Value))
+                {
+                    throw new Exception("Gateway address not configured");
+                }
+
+                if (string.IsNullOrEmpty(this.GetOption("GatewaySecret").Value))
+                {
+                    throw new Exception("Gateway secret not configured");
+                }
+
+                this.gatewayConnection = new TradFriCoapConnector(
                     this.GetOption("GatewayName").Value,
                     this.GetOption("GatewayAddress").Value,
                     this.GetOption("GatewaySecret").Value);
 
-                gatewayConnection.Connect();
-                gatewayController = new GatewayController(gatewayConnection.Client);
+                this.gatewayConnection.Connect();
+                this.gatewayController = new GatewayController(this.gatewayConnection.Client);
 
                 Log.Info("Connected");
 

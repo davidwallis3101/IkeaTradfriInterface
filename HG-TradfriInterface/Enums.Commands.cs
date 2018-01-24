@@ -7,8 +7,10 @@
 
 namespace MIG.Interfaces.HomeAutomation
 {
+    #pragma warning disable SA1600 // Elements must be documented
     internal enum Commands
     {
+        #pragma warning disable SA1602 // Enumeration items must be documented
         NotSet,
 
         SwitchBinary_Get,
@@ -33,5 +35,6 @@ namespace MIG.Interfaces.HomeAutomation
         Control_Off,
         Control_Level,
         Control_Toggle,
+        #pragma warning restore SA1602 // Enumeration items must be documented
     }
 }

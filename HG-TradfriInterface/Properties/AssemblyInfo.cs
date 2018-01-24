@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿// <copyright file="AssemblyInfo.cs" company="Wallis2000">
+// This file is part of the Homegenie-BE Ikea Tradfri Interface Project source code.
+//
+// Author: David Wallis david@wallis2000.co.uk
+// Project Homepage: http://github.com/davidwallis3101/TradfriInterface
+// </copyright>
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
