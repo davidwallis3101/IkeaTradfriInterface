@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using MIG.Config;
 using NLog;
 using Tomidix.CSharpTradFriLibrary;
@@ -38,41 +40,6 @@ namespace MIG.Interfaces.HomeAutomation
         private TradFriCoapConnector gatewayConnection;
 
         private GatewayController gatewayController;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TradfriInterface"/> class.
-        /// </summary>
-        public TradfriInterface()
-        {
-            // this.modules = new List<InterfaceModule>();
-
-            // manually add some fake modules
-            // var module_1 = new InterfaceModule
-            // {
-            //     Domain = this.GetDomain(),
-            //     Address = "1",
-            //     ModuleType = ModuleTypes.Light
-            // };
-
-            // var module_2 = new InterfaceModule
-            // {
-            //     Domain = this.GetDomain(),
-            //     Address = "2",
-            //     ModuleType = ModuleTypes.Sensor
-            // };
-
-            // var module_3 = new InterfaceModule
-            // {
-            //     Domain = this.GetDomain(),
-            //     Address = "3",
-            //     ModuleType = ModuleTypes.Sensor
-            // };
-
-            // add them to the modules list
-            // this.modules.Add(module_1);
-            // this.modules.Add(module_2);
-            // this.modules.Add(module_3);
-        }
 
         /// <summary>
         /// Event for Interface Modules Changing
@@ -123,14 +90,15 @@ namespace MIG.Interfaces.HomeAutomation
         }
 
         /// <summary>
-        /// Gets the interface modules
-        /// </summary>      
+        /// Gets the Interface Modules
+        /// </summary>
+        /// <returns>List containing the interfaces modules</returns>
         public List<InterfaceModule> GetModules()
         {
             var modules = new List<InterfaceModule>();
 
             // Get Devices from the controller
-            devices = LoadAllDevices(gatewayController, gatewayConnection);
+            this.devices = this.LoadAllDevices();
 
             foreach (var device in devices)
             {
@@ -161,6 +129,7 @@ namespace MIG.Interfaces.HomeAutomation
 
                 modules.Add(module);
             }
+
             return modules;
         }
 
@@ -211,11 +180,6 @@ namespace MIG.Interfaces.HomeAutomation
             return true;
         }
 
-        private static List<TradFriDevice> LoadAllDevices(GatewayController gwControler, TradFriCoapConnector gwConn)
-        {
-            return gwControler.GetDevices().Select(deviceID => new DeviceController(deviceID, gwConn.Client)).Select(dc => dc.GetTradFriDevice()).ToList();
-        }
-
         /// <summary>
         /// Sample Disconnect Method
         /// </summary>
@@ -236,43 +200,41 @@ namespace MIG.Interfaces.HomeAutomation
         /// <exception cref="ArgumentOutOfRangeException">Argument out of range</exception>
         public object InterfaceControl(MigInterfaceCommand request)
         {
-            var response = new ResponseText("OK"); // default success value
+            var returnValue = new ResponseText("OK");
 
-            Commands command;
-            Enum.TryParse<Commands>(request.Command.Replace(".", "_"), out command);
+            var raiseEvent = false;
 
-            var module = this.modules.Find(m => m.Address.Equals(request.Address));
+            // TODO use / update this param
+            var eventParameter = "Status.Level";
 
-            if (module != null)
+            var eventValue = string.Empty;
+
+            Enum.TryParse(request.Command.Replace(".", "_"), out Commands command);
+            var dc = new DeviceController(Convert.ToInt64(request.Address), this.gatewayConnection.Client);
+
+            switch (command)
             {
-                switch (command)
-                {
-                    case Commands.Control_On:
-                        this.OnInterfacePropertyChanged(this.GetDomain(), request.Address, "Test Interface", "Status.Level", 1);
-                        break;
-                    case Commands.Control_Off:
-                        this.OnInterfacePropertyChanged(this.GetDomain(), request.Address, "Test Interface", "Status.Level", 0);
-                        break;
-                    case Commands.Temperature_Get:
-                        this.OnInterfacePropertyChanged(this.GetDomain(), request.Address, "Test Interface", "Sensor.Temperature", 19.75);
-                        break;
-                    case Commands.Greet_Hello:
-                        this.OnInterfacePropertyChanged(this.GetDomain(), request.Address, "Test Interface", "Sensor.Message", string.Format("Hello {0}", request.GetOption(0)));
-                        response = new ResponseText("Hello World!");
-                        break;
-                    case Commands.NotSet:
-                        break;
-                    default:
-                        Log.Error(new ArgumentOutOfRangeException(), "Command [{0}] not recognised", command);
-                        break;
-                }
-            }
-            else
-            {
-                response = new ResponseText("ERROR: invalid module address");
+                case Commands.Control_On:
+                    raiseEvent = true;
+                    dc.TurnOn();
+                    break;
+
+                case Commands.Control_Off:
+                    raiseEvent = true;
+                    dc.TurnOff();
+                    break;
+
+                default:
+                    Log.Error(new ArgumentOutOfRangeException(), "Command [{0}] not recognised", command);
+                    break;
             }
 
-            return response;
+            if (raiseEvent)
+            {
+                this.OnInterfacePropertyChanged(this.GetDomain(), request.Address, "Tradfri Node", eventParameter, eventValue);
+            }
+
+            return returnValue;
         }
 
         /// <summary>
@@ -303,6 +265,15 @@ namespace MIG.Interfaces.HomeAutomation
                 var args = new InterfacePropertyChangedEventArgs(domain, source, description, propertyPath, propertyValue);
                 this.InterfacePropertyChanged(this, args);
             }
+        }
+
+        /// <summary>
+        /// Loads the devices from the gateway
+        /// </summary>
+        /// <returns>List of cref="TradFriDevice" </returns>
+        private List<TradFriDevice> LoadAllDevices()
+        {
+            return this.gatewayController.GetDevices().Select(deviceID => new DeviceController(deviceID, this.gatewayConnection.Client)).Select(dc => dc.GetTradFriDevice()).ToList();
         }
     }
 }

@@ -64,7 +64,19 @@ namespace TestProject
 
             migInterface.Connect();
             Console.WriteLine("Get Modules");
-            migInterface.GetModules();
+            var interfacemodules = migInterface.GetModules();
+
+            foreach (MIG.InterfaceModule mod in interfacemodules)
+            {
+                if (mod.ModuleType.ToString() == "Dimmer")
+                {
+                    Console.WriteLine($"Module Address: {mod.Address} Module Type: {mod.ModuleType}");
+                    var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
+                    System.Threading.Thread.Sleep(1500);
+                    response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
+
+                }
+            }
 
             // Test an interface API command programmatically <module_domain>/<module_address>/<command>[/<option_0>[/../<option_n>]]
             // var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + "/3/Greet.Hello/Username"));
