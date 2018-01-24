@@ -139,7 +139,7 @@ namespace MIG.Interfaces.HomeAutomation
                     Domain = this.GetDomain(),
                     Address = device.ID.ToString()
                 };
-                
+
                 if (device.Info.DeviceType.IndexOf(" bulb ", StringComparison.CurrentCultureIgnoreCase) >= 0)
                 {
                     Log.Debug($"Adding Module {device.Info.DeviceType}");

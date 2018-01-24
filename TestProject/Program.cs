@@ -62,13 +62,6 @@ namespace TestProject
             var interfaceDomain = "HomeAutomation.TradfriInterface";
             var migInterface = migService.GetInterface(interfaceDomain);
 
-            foreach (var option in migInterface.Options)
-            {
-                if (option.Name == "GatewayAddress")
-                {
-                    Console.WriteLine("Found");
-                }
-            }
             migInterface.Connect();
             Console.WriteLine("Get Modules");
             migInterface.GetModules();
