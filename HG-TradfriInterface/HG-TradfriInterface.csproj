@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.Commands.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HG-TradfriInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -11,15 +11,10 @@ namespace MIG.Interfaces.HomeAutomation
     internal enum Commands
     {
         #pragma warning disable SA1602 // Enumeration items must be documented
-        NotSet,
 
         Controller_Reboot,
 
         Battery_Get,
-
-        //ManufacturerSpecific_Get,
-        //NodeInfo_Get,
-
 
         Control_On,
         Control_Off,

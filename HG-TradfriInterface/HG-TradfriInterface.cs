@@ -10,13 +10,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using MIG.Config;
 using NLog;
 using Tomidix.CSharpTradFriLibrary;
 using Tomidix.CSharpTradFriLibrary.Controllers;
 using Tomidix.CSharpTradFriLibrary.Models;
-using System.Text.RegularExpressions;
 
 // namespaces must begin MIG.Interfaces for MIG to be able to load it
 namespace MIG.Interfaces.HomeAutomation
@@ -245,8 +243,6 @@ namespace MIG.Interfaces.HomeAutomation
 
                 case Commands.Control_Toggle:
                     throw new NotImplementedException();
-                    //raiseEvent = true;
-                    //break;
 
                 case Commands.Control_Colour:
                     raiseEvent = true;

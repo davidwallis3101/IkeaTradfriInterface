@@ -76,18 +76,15 @@ namespace TestProject
                     Console.WriteLine(resp.ResponseValue);
                 }
 
-
-
-                //var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
-                //System.Threading.Thread.Sleep(1000);
-                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/eaf6fb"));
-                //System.Threading.Thread.Sleep(2000);
-                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/ebb63e"));
-                //System.Threading.Thread.Sleep(2000);
-                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/f5faf6"));
-                //System.Threading.Thread.Sleep(2000);
-                //response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
-
+                // var response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.On"));
+                // System.Threading.Thread.Sleep(1000);
+                // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/eaf6fb"));
+                // System.Threading.Thread.Sleep(2000);
+                // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/ebb63e"));
+                // System.Threading.Thread.Sleep(2000);
+                // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Colour/f5faf6"));
+                // System.Threading.Thread.Sleep(2000);
+                // response = migInterface.InterfaceControl(new MigInterfaceCommand(interfaceDomain + $"/{mod.Address}/Control.Off"));
             }
 
             Console.WriteLine("\n[Press Enter to Quit]\n");
